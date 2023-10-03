@@ -22,7 +22,7 @@ On the other hand, if you have an number of devices on your internal network, yo
 
 Here's the visual illustrating how basic NAT operates:
 
-![1696376712653](image/NAT/1696376712653.png)
+![1696377178550](image/NAT/1696377178550.png)
 
 ### How can NAT perform address translation ?
 
