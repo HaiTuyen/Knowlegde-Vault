@@ -14,55 +14,28 @@ NAT (Network Address Translation) is a technique used in networking to enable a 
 
 NAT is classified into basic NAT and NAPT
 
-### Basic NAT
+### one-to-one NAT
 
-Also called **one-to-one NAT**, the basic NAT map one private IP address with a unique public IP address.
+Also called **Basic NAT**, the one to one NAT map one private IP address with a unique public IP address.
 
 On the other hand, if you have an number of devices on your internal network, you need a corresponding number of public IP addresses in order for all of them to access the internet.
 
 Here's the visual illustrating how basic NAT operates:
 
-![1696377178550](image/NAT/1696377178550.png)
+![1696410120187](image/NAT/1696410120187.png)
 
-### How can NAT perform address translation ?
+When a host in private network access a web server on the Internet, one-to-one NAT process in a NAT device (router, gateway device, etc.) as follows:
 
-Let's consider a scenario in which a small office network is using NAT to enable multiple devices to share a single public IP address for internet access.
+1. **Sending Packet**: The host sends a packet to the router, which contains:
+   * Source IP address and destination IP address (within the IP header)
+   * Source port number and destination port number (within the TCP header). We will not use this in this type of NAT.
+2. **Source Network Address Translation (SNAT)**: After receiving the packet, the router only replaces the source IP address (in the IP header) with a unique public IP address (assigned by the Internet Service Provider, or ISP).
+3. **Updating Translation Table**: The router then creates a mapping record of private IP address and corresponding public IP address in the NAT translation table and forwards the packet to the web server on the Internet.
+4. **Destination Network Address Translation (DNAT)**: After receiving the response packet from the server, router searches the NAT translation table for record inserted in previous step, replaces the destination IP in the IP header of the packet with the corresponding private IP found in the table, and sends the packet back to the host device.
 
-Here's the network configuration for the small office:
+#### Use cases:
 
-* The small office has several devices such as computers, smartphones, and printers that need to access internet.
-* The office network uses private IP address (e.g., in the range of 192.168.1.0/24) internally, such as:
-  * Computer 1: 192.168.1.2
-  * Laptop: 192.168.1.3
-  * Smartphone: 192.168.1.4
-* The office is assigned a single public IP address by the Interet Service Provider (ISP). Let's say the public IP address is 203.0.113.1
-* The office has a router or gateway device that serves as the NAT device.
+* Basic NAT is suitable for scenarios where two IP networks with incompatible addressing need to interconnect.
+* It allows communication between devices in a private network with non-routable addresses and external networks with routable addresses.
 
-#### Private device sends a packet
-
-* A device (e.g., computer 1) initiates communication by sending a packet to a destination on the internet through the NAT device.
-
-#### Source Network Address Translation (SNAT)
-
-* The NAT device (router or gateway) receives the packet and performs Source Network Address Translation (SNAT).
-* The private source IP address in the packet header is replaced with the public IP address assigned by the NAT device.
-
-#### Port Assignment (If using NAPT or PAT)
-
-* If the NAT device is configured for Network Address Port Translation (NAPT) or Port Address Translation (PAT), it assigns a unique port number to the packet.
-
-#### **NAT translation table**
-
-* The NAT device creates an entry in its translatoin table, recording the mapping between the private IP address, private port (if applicable), public IP address **and** assigned port number
-
-#### Packet sent to destination
-
-* The NAT device forwards the packet to the destination on the internet.
-
-#### Reply from destination
-
-* When the destination server responds, it sends the reply packet to the public IP address and port number assigned by the NAT device.
-
-#### Destination Network Address Translation (DNAT)
-
-* The NAT device performs Destination Network Address Translation (DNAT)
+However, one-to-one NAT cannot resovle the IPv4 address exhaustion. That's why the next type of NAT is more popular.
